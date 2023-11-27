@@ -176,7 +176,7 @@ public class DataDrivenEvents  extends EventInterface {
 
             case "click":
                 try{
-                    xPath = "//div[contains(@class, form_group)]//input[@type='submit']|//div[contains(@class, form_group)]//input[contains(text(), '"+ value +"')]";
+                    xPath = "//div[contains(@class, form_group)]//input[@type='submit']|//div[contains(@class, form_group)]//button[@data-test='"+ value +"']";
                     Log.out(4, "Searching for clickable element");
                     Log.out(4, "xPath Value: " + xPath);
                     el = driver.findElement(By.xpath(xPath));
@@ -228,7 +228,7 @@ public class DataDrivenEvents  extends EventInterface {
                 if (!value.equals("")){
                     try{
                         Log.out(4, "Searching for Clickable Cart Icon");
-                        xPath = "//div[contains(@id, 'shopping_cart_container')]//a[contains(@class, '"+ replaceSpaces(value) +"')]";
+                        xPath = "//div[contains(@id, 'shopping_cart_container')]//a[contains(@class, '"+ concatenate(value) +"_link')]";
 
                         Log.out(4, "Locating Icon...");
                         Log.out(4, "xPath: " + xPath);
@@ -241,7 +241,7 @@ public class DataDrivenEvents  extends EventInterface {
                     }catch (NoSuchElementException ex){
                         try{
                             Log.out(4, "Searching for Clickable Cart Icon using secondary xPath");
-                            xPath = "//div[contains(@class, 'primary_header')]//div[@id='shopping_cart_container']//a[contains(@class, '"+ replaceSpaces(value) +"')]";
+                            xPath = "//div[contains(@class, 'primary_header')]//div[@id='shopping_cart_container']//a[contains(@class, '"+ concatenate(value) +"_link')]";
 
                             Log.out(4, "xPath: " + xPath);
 
@@ -258,15 +258,68 @@ public class DataDrivenEvents  extends EventInterface {
                         }
                     }
                 }
+                break;
 
 
             case "verify":
-                /**
+                /*
                  *  xPath to use that works as expected after updates
                  *  //div[@class='cart_item']//div[@class='inventory_item_name' and normalize-space()='Sauce Labs Backpack']/following::div[@class='item_pricebar']//div[@class='inventory_item_price' and contains(normalize-space(), '$29.99')]
                  *  Update the contains(text(), '$29.99') to use normalized spaces.
                  *  -> leading and trailing whitespaces caused a break in the xPath value
                  */
+                if (!field.equals("") || !value.equals("")){
+                    try{
+                        xPath = "//div[@class='cart_item']//div[@class='inventory_item_name' and normalize-space()='"+ field +"']/following::div[@class='item_pricebar']//div[@class='inventory_item_price' and contains(normalize-space(), '"+ value +"')]";
+                        el = driver.findElement(By.xpath(xPath));
+
+                        Log.out(4, "Locating element using xPath: " + xPath);
+
+                        if (el != null && el.isDisplayed()){
+                            Log.out(4, "Element found using primary  path");
+                            success(sheetIndex, rowIndex);
+                        }else{
+                            Log.out(4, "Could not find element");
+                            failure(sheetIndex, rowIndex);
+                        }
+                    }catch (NoSuchElementException ex){
+                        Log.out(4, "Failed to locate label for verification");
+
+                        try{
+                            Log.out(4, "Attempting secondary xPath ");
+                            xPath = "//div[contains(@class, 'summary_info')]//div[@class='summary_info_label' and normalize-space()='"+ field +"']/following::div[@class='summary_value_label' and normalize-space()='"+ value +"']";
+
+                            el = driver.findElement(By.xpath(xPath));
+                            if (el != null) {
+                                Log.out(4, "Found element using Secondary Path: " + xPath);
+                                success(sheetIndex, rowIndex);
+                            }
+                        }catch (NoSuchElementException e){
+                            try{
+                                Log.out(4, "Locating value label");
+                                xPath = "//div[contains(@class, 'summary_info')]//div[@class='summary_info_label' ]/following::div[contains(@class, 'summary_"+ removeSpace(field) +"_label')]";
+
+                                Log.out(4, "Searching for label: " + xPath);
+                                el = driver.findElement(By.xpath(xPath));
+
+                                Log.out(4, "Verifying label conditions");
+                                boolean isVerified = el.getText().contains(value);
+
+                                if (isVerified){
+                                    Log.out(4, "Label value verified successfully");
+                                    success(sheetIndex, rowIndex);
+                                }else{
+                                    Log.out(4, "Could not verify Label value  successfully");
+                                    failure(sheetIndex, rowIndex);
+                                }
+                            }catch (NoSuchElementException elementException){
+                                Log.out(4, "Element threw an exception: ");
+                                elementException.printStackTrace();
+                                failure(sheetIndex, rowIndex);
+                            }
+                        }
+                    }
+                }
                 break;
 
             case "totaltimeexecution":
@@ -278,6 +331,14 @@ public class DataDrivenEvents  extends EventInterface {
 
     private static String replaceSpaces(String value){
         return value.replace(" ", "-").toLowerCase();
+    }
+
+    private static String concatenate(String value){
+        return value.replace(" ", "_").toLowerCase();
+    }
+
+    private static String removeSpace(String value){
+        return value.replace(" ", "");
     }
 
     private static void success(int sheetIndex, int rowIndex){
@@ -296,6 +357,5 @@ public class DataDrivenEvents  extends EventInterface {
                 TimeUnit.MILLISECONDS.toHours(totalTime),
                 TimeUnit.MILLISECONDS.toMinutes(totalTime),
                 TimeUnit.MILLISECONDS.toSeconds(totalTime));
-
     }
 }
