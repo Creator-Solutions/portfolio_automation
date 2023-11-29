@@ -105,7 +105,7 @@ public class DataDrivenEvents  extends EventInterface {
     }
 
     public static void execSteps(String action, String field, String value, int sheetIndex, int rowIndex, SpreadsheetReaderPOI xls, WebDriver driver) throws InvalidPropertyException {
-        String xPath;
+        String xPath = "";
         WebElement el;
 
         switch (action){
@@ -190,7 +190,7 @@ public class DataDrivenEvents  extends EventInterface {
                     Log.out(4, "Could not find clickable element");
                     try {
                         Log.out(4, "Searching for clickable element using secondary xPath");
-                        xPath = "//div[contains(@class, form_group)]//input[contains(@data-test, '" + value + "')]";
+                        xPath = "//div[contains(@class, form_group)]//input[contains(@data-test, '" + replaceSpaces(value) + "')]";
                         Log.out(4, "xPath Value: " + xPath);
 
                         el = driver.findElement(By.xpath(xPath));
@@ -313,9 +313,32 @@ public class DataDrivenEvents  extends EventInterface {
                                     failure(sheetIndex, rowIndex);
                                 }
                             }catch (NoSuchElementException elementException){
-                                Log.out(4, "Element threw an exception: ");
-                                elementException.printStackTrace();
-                                failure(sheetIndex, rowIndex);
+                                try{
+                                    Log.out(4, "Locating secondary  value label");
+                                    xPath = "//div[@class='header_secondary_container']//span[contains(text(), '"+ value +"')]";
+
+                                    el = driver.findElement(By.xpath(xPath));
+
+                                    if (el != null ){
+                                        Log.out(4, "Found verified element");
+                                        success(sheetIndex, rowIndex);
+                                    }
+                                }catch (NoSuchElementException e1){
+                                    // //div[contains(@class, 'checkout_complete_container')]//h2[contains(text(), 'Thank you for your order!')]
+                                    try{
+                                        xPath = "//div[contains(@class, 'checkout_complete_container')]//h2[contains(text(),'"+ value +"')]";
+
+                                        el = driver.findElement(By.xpath(xPath));
+
+                                        if (el != null ){
+                                            Log.out(4, "Found verified element");
+                                            success(sheetIndex, rowIndex);
+                                        }
+                                    }catch (NoSuchElementException exception){
+                                        Log.out(4, "Could not verify using xPath: " + xPath);
+                                        failure(sheetIndex, rowIndex);
+                                    }
+                                }
                             }
                         }
                     }
