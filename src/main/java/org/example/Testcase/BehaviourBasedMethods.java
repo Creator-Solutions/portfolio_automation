@@ -1,6 +1,6 @@
 package org.example.Testcase;
 
-import org.example.Exceptions.InvalidElementException;
+import org.example.Log;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -44,21 +44,30 @@ public class BehaviourBasedMethods {
 
     /**
      * Handles onclick events for elements
-     * @param driver - Chrome Driver Instance
-     * @param xPathExpression - xPath Expression
-     * @throws InvalidElementException - Throws an exception if the element could not be found or is not displayed
+     * @param element WebElement
      */
-    public void onElementClick(ChromeDriver driver, String xPathExpression) throws InvalidElementException {
-        WebElement el = driver.findElement(By.xpath(xPathExpression));
-
+    public void  onElementClick(WebElement element) {
         try{
-            if (el.isDisplayed()){
-                el.click();
-            }else{
-                throw new InvalidElementException("Clickable element could not be located by xPath");
+            if (element.isDisplayed()){
+                element.click();
+                Log.out(4,  "Sending click action");
             }
-        }catch (InvalidElementException ex){
-            ex.fillInStackTrace();
+        }catch (Exception ex){
+            Log.out(4,  "Unable to locate clickable element");
         }
     }
+
+    /**
+     *  verifies element exists and is displayed on page
+     * @param element HTML Element
+     * @return boolean
+     */
+    public boolean verifyElement(WebElement element){
+        return element != null && element.isDisplayed() ;
+    }
+
+    public boolean verifyElementByValue(WebElement element, String value){
+        return element != null && element.getText().contains(value);
+    }
 }
+

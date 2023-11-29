@@ -27,6 +27,7 @@ import static com.google.common.io.Files.getFileExtension;
 public class DataDrivenEvents  extends EventInterface {
 
     private static final SpreadsheetReaderPOI xls = new SpreadsheetReaderPOI();
+    private static final BehaviourBasedMethods bbm = new BehaviourBasedMethods();
 
     private final String  baseDIR = Config.getSetting("basedir");
 
@@ -106,7 +107,7 @@ public class DataDrivenEvents  extends EventInterface {
 
     public static void execSteps(String action, String field, String value, int sheetIndex, int rowIndex, SpreadsheetReaderPOI xls, WebDriver driver) throws InvalidPropertyException {
         String xPath = "";
-        WebElement el;
+        WebElement element;
 
         switch (action){
             case "navigate":
@@ -138,13 +139,13 @@ public class DataDrivenEvents  extends EventInterface {
 
                 try{
                     xPath = "//div[contains(@class, form_group)]//input[@id='"+ field +"']";
-                    el = driver.findElement(By.xpath(xPath));
+                    element = driver.findElement(By.xpath(xPath));
 
                     Log.out(4, "Searching for usable field");
                     Log.out(4, "xPath Value: " + xPath);
 
-                    if (el != null){
-                        el.sendKeys(value);
+                    if (element != null){
+                        bbm.enterValue(element, value);
                         success(sheetIndex, rowIndex);
                     }
 
@@ -156,11 +157,11 @@ public class DataDrivenEvents  extends EventInterface {
                             xPath = "//div[contains(@class, form_group)]//input[@data-test='"+ field +"']";
                             Log.out(4, "xPath Value: " + xPath);
 
-                            el = driver.findElement(By.xpath(xPath));
+                            element = driver.findElement(By.xpath(xPath));
 
-                            if (el != null){
+                            if (bbm.verifyElement(element)){
                                 Log.out(4, "Found relative field by xpath");
-                                el.sendKeys(value);
+                                bbm.enterValue(element, value);
                                 success(sheetIndex, rowIndex);
                             }else{
                                 Log.out(4, "Could not find relative field by xPath");
@@ -179,11 +180,11 @@ public class DataDrivenEvents  extends EventInterface {
                     xPath = "//div[contains(@class, form_group)]//input[@type='submit']|//div[contains(@class, form_group)]//button[@data-test='"+ value +"']";
                     Log.out(4, "Searching for clickable element");
                     Log.out(4, "xPath Value: " + xPath);
-                    el = driver.findElement(By.xpath(xPath));
+                    element = driver.findElement(By.xpath(xPath));
 
-                    if (el != null){
+                    if (bbm.verifyElement(element)){
                         Log.out(4, "Sending Click Event");
-                        el.click();
+                        bbm.onElementClick(element);
                         success(sheetIndex, rowIndex);
                     }
                 }catch (NoSuchElementException ex) {
@@ -193,11 +194,11 @@ public class DataDrivenEvents  extends EventInterface {
                         xPath = "//div[contains(@class, form_group)]//input[contains(@data-test, '" + replaceSpaces(value) + "')]";
                         Log.out(4, "xPath Value: " + xPath);
 
-                        el = driver.findElement(By.xpath(xPath));
+                        element = driver.findElement(By.xpath(xPath));
 
-                        if (el != null) {
+                        if (bbm.verifyElement(element)) {
                             Log.out(4, "Sending Click Event");
-                            el.click();
+                            bbm.onElementClick(element);
                             success(sheetIndex, rowIndex);
                         }
                     } catch (NoSuchElementException exc) {
@@ -205,14 +206,13 @@ public class DataDrivenEvents  extends EventInterface {
 
                         try {
                             Log.out(4, "Final Element Search Attempt");
-                            // //*[contains(text(),'"+ value +"')]/following::div/button[@id='add-to-cart-" + replaceSpaces(value) + "']
                             xPath = "//*[contains(text(),'"+ value + "')]/following::div/button[@id='add-to-cart-" + replaceSpaces(value) + "']";
 
-                            el = driver.findElement(By.xpath(xPath));
+                            element = driver.findElement(By.xpath(xPath));
 
-                            if (el != null) {
+                            if (bbm.verifyElement(element)) {
                                 Log.out(4, "Sending Click Event");
-                                el.click();
+                                bbm.onElementClick(element);
                                 success(sheetIndex, rowIndex);
                             }
 
@@ -225,18 +225,18 @@ public class DataDrivenEvents  extends EventInterface {
                 break;
 
             case "click icon":
-                if (!value.equals("")){
+                if (!value.isEmpty()){
                     try{
                         Log.out(4, "Searching for Clickable Cart Icon");
                         xPath = "//div[contains(@id, 'shopping_cart_container')]//a[contains(@class, '"+ concatenate(value) +"_link')]";
 
                         Log.out(4, "Locating Icon...");
                         Log.out(4, "xPath: " + xPath);
-                        el = driver.findElement(By.xpath(xPath));
+                        element = driver.findElement(By.xpath(xPath));
 
-                        if (el != null){
+                        if (bbm.verifyElement(element)){
                             Log.out(4, "submitting Click Event");
-                            el.click();
+                            bbm.onElementClick(element);
                         }
                     }catch (NoSuchElementException ex){
                         try{
@@ -245,11 +245,11 @@ public class DataDrivenEvents  extends EventInterface {
 
                             Log.out(4, "xPath: " + xPath);
 
-                            el = driver.findElement(By.xpath(xPath));
+                            element = driver.findElement(By.xpath(xPath));
 
-                            if (el != null){
+                            if (bbm.verifyElement(element)){
                                 Log.out(4, "submitting Secondary Click Event");
-                                el.click();
+                                bbm.onElementClick(element);
                                 success(sheetIndex, rowIndex);
                             }
                         }catch (NoSuchElementException e){
@@ -262,20 +262,14 @@ public class DataDrivenEvents  extends EventInterface {
 
 
             case "verify":
-                /*
-                 *  xPath to use that works as expected after updates
-                 *  //div[@class='cart_item']//div[@class='inventory_item_name' and normalize-space()='Sauce Labs Backpack']/following::div[@class='item_pricebar']//div[@class='inventory_item_price' and contains(normalize-space(), '$29.99')]
-                 *  Update the contains(text(), '$29.99') to use normalized spaces.
-                 *  -> leading and trailing whitespaces caused a break in the xPath value
-                 */
-                if (!field.equals("") || !value.equals("")){
+                if (!field.isEmpty() || !value.isEmpty()){
                     try{
                         xPath = "//div[@class='cart_item']//div[@class='inventory_item_name' and normalize-space()='"+ field +"']/following::div[@class='item_pricebar']//div[@class='inventory_item_price' and contains(normalize-space(), '"+ value +"')]";
-                        el = driver.findElement(By.xpath(xPath));
+                        element = driver.findElement(By.xpath(xPath));
 
                         Log.out(4, "Locating element using xPath: " + xPath);
 
-                        if (el != null && el.isDisplayed()){
+                        if (bbm.verifyElement(element)){
                             Log.out(4, "Element found using primary  path");
                             success(sheetIndex, rowIndex);
                         }else{
@@ -289,8 +283,8 @@ public class DataDrivenEvents  extends EventInterface {
                             Log.out(4, "Attempting secondary xPath ");
                             xPath = "//div[contains(@class, 'summary_info')]//div[@class='summary_info_label' and normalize-space()='"+ field +"']/following::div[@class='summary_value_label' and normalize-space()='"+ value +"']";
 
-                            el = driver.findElement(By.xpath(xPath));
-                            if (el != null) {
+                            element = driver.findElement(By.xpath(xPath));
+                            if (bbm.verifyElement(element)) {
                                 Log.out(4, "Found element using Secondary Path: " + xPath);
                                 success(sheetIndex, rowIndex);
                             }
@@ -300,12 +294,11 @@ public class DataDrivenEvents  extends EventInterface {
                                 xPath = "//div[contains(@class, 'summary_info')]//div[@class='summary_info_label' ]/following::div[contains(@class, 'summary_"+ removeSpace(field) +"_label')]";
 
                                 Log.out(4, "Searching for label: " + xPath);
-                                el = driver.findElement(By.xpath(xPath));
+                                element = driver.findElement(By.xpath(xPath));
 
                                 Log.out(4, "Verifying label conditions");
-                                boolean isVerified = el.getText().contains(value);
 
-                                if (isVerified){
+                                if (bbm.verifyElementByValue(element, value)){
                                     Log.out(4, "Label value verified successfully");
                                     success(sheetIndex, rowIndex);
                                 }else{
@@ -317,20 +310,19 @@ public class DataDrivenEvents  extends EventInterface {
                                     Log.out(4, "Locating secondary  value label");
                                     xPath = "//div[@class='header_secondary_container']//span[contains(text(), '"+ value +"')]";
 
-                                    el = driver.findElement(By.xpath(xPath));
+                                    element = driver.findElement(By.xpath(xPath));
 
-                                    if (el != null ){
+                                    if (bbm.verifyElement(element)){
                                         Log.out(4, "Found verified element");
                                         success(sheetIndex, rowIndex);
                                     }
                                 }catch (NoSuchElementException e1){
-                                    // //div[contains(@class, 'checkout_complete_container')]//h2[contains(text(), 'Thank you for your order!')]
                                     try{
                                         xPath = "//div[contains(@class, 'checkout_complete_container')]//h2[contains(text(),'"+ value +"')]";
 
-                                        el = driver.findElement(By.xpath(xPath));
+                                        element = driver.findElement(By.xpath(xPath));
 
-                                        if (el != null ){
+                                        if (bbm.verifyElement(element)){
                                             Log.out(4, "Found verified element");
                                             success(sheetIndex, rowIndex);
                                         }

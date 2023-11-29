@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d8f58826-2e0f-4f29-a840-aa770498b2d8" name="Changes" comment="Improvement have been made to the Data Driven Events&#10;&#10;* Improvements have been made to the click action&#10;** Rather than hard coding each value, an element will be located by value.&#10;&#10;* Improvements have been made to the verify action&#10;** The verify action will now locate multiple elements if the catch block is executed, until a valid result has been found, otherwise the test case fails">
+    <list default="true" id="d8f58826-2e0f-4f29-a840-aa770498b2d8" name="Changes" comment="Code improvements have been made.&#10;&#10;* Redundancies&#10;** A lot of redundant code has been extracted and modularized by placing in a method and calling the method if required.&#10;&#10;* Readability&#10;** Readability has been updated. Proper null checks and error handling is now being catered for properly&#10;&#10;* BehaviourBasedMethods Integration&#10;** All method available for use in Data Driven Events have now been applied for Full Integration into the Class">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Testcase/BehaviourBasedMethods.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Testcase/BehaviourBasedMethods.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Testcase/DataDrivenEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Testcase/DataDrivenEvents.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -142,6 +143,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="Improvement have been made to the Data Driven Events&#10;&#10;* Improvements have been made to the click action&#10;** Rather than hard coding each value, an element will be located by value.&#10;&#10;* Improvements have been made to the verify action&#10;** The verify action will now locate multiple elements if the catch block is executed, until a valid result has been found, otherwise the test case fails" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improvement have been made to the Data Driven Events&#10;&#10;* Improvements have been made to the click action&#10;** Rather than hard coding each value, an element will be located by value.&#10;&#10;* Improvements have been made to the verify action&#10;** The verify action will now locate multiple elements if the catch block is executed, until a valid result has been found, otherwise the test case fails" />
+    <MESSAGE value="Code improvements have been made.&#10;&#10;* Redundancies&#10;** A lot of redundant code has been extracted and modularized by placing in a method and calling the method if required.&#10;&#10;* Readability&#10;** Readability has been updated. Proper null checks and error handling is now being catered for properly&#10;&#10;* BehaviourBasedMethods Integration&#10;** All method available for use in Data Driven Events have now been applied for Full Integration into the Class" />
+    <option name="LAST_COMMIT_MESSAGE" value="Code improvements have been made.&#10;&#10;* Redundancies&#10;** A lot of redundant code has been extracted and modularized by placing in a method and calling the method if required.&#10;&#10;* Readability&#10;** Readability has been updated. Proper null checks and error handling is now being catered for properly&#10;&#10;* BehaviourBasedMethods Integration&#10;** All method available for use in Data Driven Events have now been applied for Full Integration into the Class" />
   </component>
 </project>
