@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d8f58826-2e0f-4f29-a840-aa770498b2d8" name="Changes" comment="Code improvements have been made.&#10;&#10;* Redundancies&#10;** A lot of redundant code has been extracted and modularized by placing in a method and calling the method if required.&#10;&#10;* Readability&#10;** Readability has been updated. Proper null checks and error handling is now being catered for properly&#10;&#10;* BehaviourBasedMethods Integration&#10;** All method available for use in Data Driven Events have now been applied for Full Integration into the Class">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Testcase/SpreadsheetReaderPOI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Testcase/BehaviourBasedMethods.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Testcase/BehaviourBasedMethods.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Testcase/DataDrivenEvents.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Testcase/DataDrivenEvents.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,10 +27,10 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="MavenImportPreferences">
-    <option name="importingSettings">
-      <MavenImportingSettings>
-        <option name="workspaceImportEnabled" value="true" />
-      </MavenImportingSettings>
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
     </option>
   </component>
   <component name="ProjectId" id="2WwcHPmV7zppB4E5T5hD9luwSH1" />
@@ -139,6 +138,17 @@
     </task>
     <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
